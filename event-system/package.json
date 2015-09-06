@@ -5,7 +5,8 @@
     "name": "Westley Argentum Hennigh"
   },
   "dependencies": {
-    "twit": "2.1.x"
+    "twit": "2.1.x",
+    "node-fetch": "1.3.x"
   },
   "engines": {
     "node": ">=0.8.0"
