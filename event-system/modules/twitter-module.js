@@ -2,16 +2,14 @@
 var Twit = require('twit'),
     config = require('./twitter-config.json');
 
-var TwitterModule = module.exports = function(eventEmitter) {
-    var that = this;
-
-    that.twit = new Twit(config);
+var TwitterModule = module.exports = function (eventEmitter) {
+    this.twit = new Twit(config);
 
     eventEmitter.on('newTweet', function(text) {
-        that.tweet(text, function(err) {
+        this.tweet(text, function(err) {
             err && console.log(err);
         });
-    });
+    }.bind(this));
 };
 
 TwitterModule.prototype.tweet = function (status, cb) {
