@@ -1,18 +1,27 @@
 
 var events = require('events'),
-    fs = require('fs');
+    fs = require('fs'),
+    config = require('./config.json');
 
 // global event system used for communication between
 // all loaded modules
 var puppyEmitter = new events.EventEmitter();
 
-module_files = fs.readdirSync('./modules').filter(function (filename) {
-    return filename.indexOf("-module") > -1;
-});
+// load and initialize all of the modules
+var modules = {};
+for (var i = 0; i < config['modules'].length; ++i) {
+    var moduleConfig = config['modules'][i];
 
-modules = module_files.map(function (filename) {
-    var Module = require('./modules/' + filename);
-    return new Module(puppyEmitter);
-});
+    var Module = require(moduleConfig['file']);
+    modules[moduleConfig['moduleName']] = new Module(puppyEmitter, moduleConfig['config']);
+}
 
-puppyEmitter.emit('newTweet', 'beep bloop bop, I am a computer!');
+// set up the connections between modules
+for (var i = 0; i < config['connections'].length; ++i) {
+    var connection = config['connections'][i];
+
+    var module = modules[connection['module']],
+        fn = module[connection['fn']];
+
+    puppyEmitter.on(connection['on'], fn.bind(module));
+}
