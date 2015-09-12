@@ -10,7 +10,6 @@ NytTweeterModule.prototype.checkForNewMostPopular = function (stories) {
 
         if (!this.previousMostPopular[story['url']]) {
             this.previousMostPopular[story['url']] = story;
-            console.log('NEW STORY!', story['url']);
             this.emitter.emit('new-nyt-story', story['title']);
         }
     }
