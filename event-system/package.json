@@ -7,7 +7,9 @@
   "dependencies": {
     "twit": "2.1.x",
     "node-fetch": "1.3.x",
-    "markovchain": "0.0.6"
+    "markovchain": "0.0.6",
+    "feedparser": "1.1.x",
+    "request": "2.65.x"
   },
   "engines": {
     "node": ">=0.8.0"
