@@ -1,5 +1,6 @@
 var FeedParser = require('feedparser'),
-    request = require('request');
+    request = require('request'),
+    cheerio = require('cheerio');
 
 var EdgarMonitor = module.exports = function(emitter, config) {
     this.emitter = emitter;
@@ -9,6 +10,13 @@ var EdgarMonitor = module.exports = function(emitter, config) {
     for (var i = 0; i < feeds.length; ++i) {
         setInterval(parseFeed.bind(this, feeds[i]), config['poll-interval']);
     }
+
+    emitter.on('edgar-entry', processEntry.bind(this));
+    emitter.on('new-edgar-entry', persistFilingDocuments.bind(this));
+}
+
+function logError(err) {
+    console.log('> error in edgar monitor: \n', err);
 }
 
 function parseFeed(feed) {
@@ -40,13 +48,41 @@ function parseFeed(feed) {
             entry;
 
         while(entry = stream.read()) {
-            console.log(entry);
-            console.log('=======================');
             emitter.emit('edgar-entry', entry);
         }
     });
-};
+}
 
-function logError(err) {
-    console.log('> error in edgar monitor: \n', err);
+function processEntry(entry) {
+    // stubbed out until I can get access to a database
+
+    var emitter = this.emitter;
+
+    // console.log(entry);
+    // console.log('=======================');
+    
+    emitter.emit('new-edgar-entry', entry);
+}
+
+function persistFilingDocuments(entry) {
+    console.log(entry['link']);
+    console.log(entry['guid']);
+    console.log('=====');
+
+    request(entry['link'], function(err, res, html) {
+        if (res.statusCode != 200) {
+            return this.emit('error', new Error('bad status code: ' + res.statusCode));
+        }
+
+        console.log('~~~');
+        // console.log(html);
+
+        var $ = cheerio.load(html);
+
+        var docLink = $('tbody tr td:nth-child(3) a').text();
+        console.log('docLink: ', docLink);
+        // console.log('> ', docLink);
+
+
+    }).on('error', logError);
 }
