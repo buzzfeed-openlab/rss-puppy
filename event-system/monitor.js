@@ -7,9 +7,11 @@ var Monitor = module.exports = function Monitor(feeds, rate, dbconfig, emitter) 
     this.feeds = feeds;
     this.emitter = emitter;
 
+    dbconfig.connectionString = this.buildDBConnectionString(dbconfig);
+
     this.setupDatabase(dbconfig, emitter);
 
-    this.feedQueryInterval = setInterval(this.queryOldFeeds.bind(this), rate);
+    this.feedQueryInterval = setInterval(this.queryOldFeeds.bind(this, dbconfig, emitter), rate);
 }
 
 Monitor.prototype.buildDBConnectionString = function(dbconfig) {
@@ -32,9 +34,7 @@ Monitor.prototype.runDBScript = function(client, filename, cb) {
 };
 
 Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
-    this.pgConnectionString = this.buildDBConnectionString(dbconfig);
-
-    pg.connect(this.pgConnectionString, function(err, client, done) {
+    pg.connect(dbconfig.connectionString, function(err, client, done) {
         function handleError(err) {
             console.log(err);
             if(client) {
@@ -57,6 +57,8 @@ Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
                 this.feeds, function(err, result) {
 
                 if (err) { return handleError(err); }
+
+                console.log('SETUP!');
                 done();
             });
 
@@ -64,6 +66,8 @@ Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
     }.bind(this));
 }
 
-Monitor.prototype.queryOldFeeds = function() {
-
+Monitor.prototype.queryOldFeeds = function(dbconfig, emitter) {
+    pg.connect(dbconfig.connectionString, function(err, client, done) {
+        done();
+    });
 }
