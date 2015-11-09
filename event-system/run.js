@@ -16,4 +16,4 @@ emitter.on('error', function(err) {
 });
 
 // start monitor with feeds, dbconfig, and the emitter
-var monitor = new Monitor(["feed1", "feed2"], config['dbconfig'], emitter);
+var monitor = new Monitor(config['feeds'], config['rate'], config['dbconfig'], emitter);

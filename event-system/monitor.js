@@ -1,44 +1,80 @@
 
 var timequeue = require('timequeue'),
-    pg = require('pg');
+    pg = require('pg'),
+    fs = require('fs');
 
-var Monitor = module.exports = function Monitor(feeds, dbconfig, emitter) {
-    this.pgConnectionString = 'postgres://puppy:puppydev@rss-monitor-edgar.c188nspwgrry.us-east-1.rds.amazonaws.com:5432/edgarfeeds';
+var Monitor = module.exports = function Monitor(feeds, rate, dbconfig, emitter) {
+    this.feeds = feeds;
+    this.emitter = emitter;
+
+    console.log('setupDatabase...');
+    this.setupDatabase(dbconfig, emitter);
+
+    this.feedQueryInterval = setInterval(this.queryOldFeeds.bind(this), rate);
+}
+
+Monitor.prototype.buildDBConnectionString = function(dbconfig) {
+    if (dbconfig['connectionString']) {
+        return dbconfig['connectionString'];
+    }
+
+    var user = dbconfig['user'],
+        pw = dbconfig['password'],
+        url = dbconfig['url'],
+        port = dbconfig['port'],
+        dbname = dbconfig['dbname'];
+
+    return 'postgres://' + user + ':' + pw + '@' + url + ':' + port + '/' + dbname;
+};
+
+Monitor.prototype.runDBScript = function(client, filename, cb) {
+    var script = fs.readFileSync(filename).toString();
+    client.query(script, cb);
+};
+
+Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
+    this.pgConnectionString = this.buildDBConnectionString(dbconfig);
+
+    console.log(this.pgConnectionString);
 
     pg.connect(this.pgConnectionString, function(err, client, done) {
-        if (err) {
-            console.log('ERRRRRR: ', err);
-            return emitter.emit('error', err);
+        console.log('maybe connected...');
+
+        function handleError(err) {
+            console.log(err);
+            if(client) {
+                done(client);
+            }
+            emitter.emit(err);
         }
+
+        if (err) { return handleError(err); }
 
         console.log('CONNECTED...');
 
-        client.query('DROP TABLE IF EXISTS feeds', function(err, result) {
-            if (err) {
-                return emitter.emit('error', err);
+        this.runDBScript(client, './init-feed-db.sql', function(err, result) {
+            if (err) { return handleError(err); }
+            console.log('SETUP!');
+
+            var feedChunks = [];
+            for (var i = 1; i <= this.feeds.length; ++i) {
+                feedChunks.push('($' + i + ', DEFAULT)');
             }
 
-            console.log('DROPPED TABLE!');
+            console.log(feedChunks);
 
-            client.query('CREATE TABLE feeds (feed text primary key, lastUpdated timestamp default NULL)', function(err, result) {
+            client.query('INSERT INTO feeds (feed, lastUpdated) VALUES ' + feedChunks.join(', '),
+                this.feeds, function(err, result) {
 
-                if (err) {
-                    return emitter.emit('error', err);
-                }
+                if (err) { return handleError(err); }
+                console.log('INSERTED!');
+                done();
+            });
 
-                console.log('CREATED TABLE!');
+        }.bind(this));
+    }.bind(this));
+}
 
-                for (var i = 0; i < feeds.length; ++i) {
-                    var query = client.query('INSERT INTO feeds (feed, lastUpdated) VALUES ($1, DEFAULT)', [feeds[i]]);
+Monitor.prototype.queryOldFeeds = function() {
 
-                    query.on('error', function(err) {
-                        console.log('ERRORORORORR', err);
-                        emitter.emit('error', err);
-                    });
-                }
-
-
-            })
-        });
-    });
 }
