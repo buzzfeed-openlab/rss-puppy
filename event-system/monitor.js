@@ -7,7 +7,6 @@ var Monitor = module.exports = function Monitor(feeds, rate, dbconfig, emitter) 
     this.feeds = feeds;
     this.emitter = emitter;
 
-    console.log('setupDatabase...');
     this.setupDatabase(dbconfig, emitter);
 
     this.feedQueryInterval = setInterval(this.queryOldFeeds.bind(this), rate);
@@ -35,11 +34,7 @@ Monitor.prototype.runDBScript = function(client, filename, cb) {
 Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
     this.pgConnectionString = this.buildDBConnectionString(dbconfig);
 
-    console.log(this.pgConnectionString);
-
     pg.connect(this.pgConnectionString, function(err, client, done) {
-        console.log('maybe connected...');
-
         function handleError(err) {
             console.log(err);
             if(client) {
@@ -50,24 +45,18 @@ Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
 
         if (err) { return handleError(err); }
 
-        console.log('CONNECTED...');
-
         this.runDBScript(client, './init-feed-db.sql', function(err, result) {
             if (err) { return handleError(err); }
-            console.log('SETUP!');
 
             var feedChunks = [];
             for (var i = 1; i <= this.feeds.length; ++i) {
                 feedChunks.push('($' + i + ', DEFAULT)');
             }
 
-            console.log(feedChunks);
-
             client.query('INSERT INTO feeds (feed, lastUpdated) VALUES ' + feedChunks.join(', '),
                 this.feeds, function(err, result) {
 
                 if (err) { return handleError(err); }
-                console.log('INSERTED!');
                 done();
             });
 
