@@ -18,6 +18,7 @@ var Monitor = module.exports = function Monitor(feeds, rate, dbconfig, emitter) 
     this.feedQueryInterval = setInterval(this.checkForOldFeeds.bind(this, dbconfig, emitter), rate);
     emitter.on('old-feed', this.queryFeed.bind(this, dbconfig, emitter));
     emitter.on('feed-parsed', this.updateTimestamp.bind(this, dbconfig, emitter));
+    emitter.on('entry', this.persistEntry.bind(this, dbconfig, emitter));
 };
 
 Monitor.prototype.buildDBConnectionString = function(dbconfig) {
@@ -45,7 +46,7 @@ Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
             if(client) {
                 done(client);
             }
-            emitter.emit(err);
+            emitter.emit('error', err);
         }
 
         if (err) { return handleError(err); }
@@ -77,7 +78,7 @@ Monitor.prototype.checkForOldFeeds = function(dbconfig, emitter) {
             if(client) {
                 done(client);
             }
-            emitter.emit(err);
+            emitter.emit('error', err);
         }
 
         if (err) { return handleError(err); }
@@ -104,7 +105,7 @@ Monitor.prototype.checkForOldFeeds = function(dbconfig, emitter) {
 
 Monitor.prototype.queryFeed = function(dbconfig, emitter, feed) {
     function handleError(err) {
-        emitter.emit(err);
+        emitter.emit('error', err);
     }
 
     var options = {
@@ -132,7 +133,7 @@ Monitor.prototype.queryFeed = function(dbconfig, emitter, feed) {
             entry;
 
         while(entry = stream.read()) {
-            emitter.emit('edgar-entry', entry);
+            emitter.emit('entry', entry, feed);
         }
 
         emitter.emit('feed-parsed', feed);
@@ -145,7 +146,7 @@ Monitor.prototype.updateTimestamp = function(dbconfig, emitter, feed) {
             if(client) {
                 done(client);
             }
-            emitter.emit(err);
+            emitter.emit('error', err);
         }
 
         if (err) { return handleError(err); }
@@ -153,6 +154,34 @@ Monitor.prototype.updateTimestamp = function(dbconfig, emitter, feed) {
         client.query('UPDATE feeds SET lastUpdated = NOW() WHERE feed = $1', [feed], function(err, result) {
             if (err) { return handleError(err); }
             done();
+        });
+    });
+};
+
+Monitor.prototype.persistEntry = function(dbconfig, emitter, entry, feed) {
+    console.log('>> ', entry.guid);
+
+    pg.connect(dbconfig.connectionString, function(err, client, done) {
+        function handleError(err) {
+            if(client) {
+                done(client);
+            }
+            emitter.emit('error', err);
+        }
+
+        if (err) { return handleError(err); }
+
+        client.query('SELECT * FROM entries WHERE id = $1', [entry.guid], function(err, result) {
+            if (err) { return handleError(err); }
+
+            if (result.rows.length) { return done(); }
+
+            client.query('INSERT INTO entries (id, feed) VALUES ($1, $2)', [entry.guid, feed], function(err, result) {
+                if (err) { return handleError(err); }
+
+                emitter.emit('new-entry', entry, feed);
+                done();
+            });
         });
     });
 };
