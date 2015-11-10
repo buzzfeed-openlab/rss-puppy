@@ -7,11 +7,12 @@ var emitter = new events.EventEmitter();
 
 // register outputs to handle new rss entries
 // ...
-emitter.on('entry', function(entry) {
-    // console.log('EDGAR ENTRY!');
+emitter.on('old-feed', function(feed) {
+    console.log('old-feed: ', feed);
 });
+
 emitter.on('new-entry', function(entry) {
-    console.log('NEW ENTRY:\n', entry);
+    console.log('new-entry: ', entry.guid);
 });
 
 emitter.on('error', function(err) {

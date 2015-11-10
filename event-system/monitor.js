@@ -64,7 +64,6 @@ Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
 
                 if (err) { return handleError(err); }
 
-                console.log('SETUP!');
                 done();
             });
 
@@ -73,6 +72,8 @@ Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
 };
 
 Monitor.prototype.checkForOldFeeds = function(dbconfig, emitter) {
+    console.log('checking for old feeds...');
+
     pg.connect(dbconfig.connectionString, function(err, client, done) {
         function handleError(err) {
             if(client) {
@@ -83,20 +84,15 @@ Monitor.prototype.checkForOldFeeds = function(dbconfig, emitter) {
 
         if (err) { return handleError(err); }
 
-        console.log('***');
-
         var query = client.query('SELECT * FROM feeds WHERE lastUpdated < NOW() - INTERVAL \'15 seconds\' OR lastUpdated IS NULL');
 
         query.on('error', handleError);
 
         query.on('row', function(row) {
-            console.log(row.feed);
             emitter.emit('old-feed', row.feed);
-            // this.queryFeed(row.feed, dbconfig, emitter);
         }.bind(this));
 
         query.on('end', function(result) {
-            console.log('done...')
             done();
         });
 
@@ -151,7 +147,9 @@ Monitor.prototype.updateTimestamp = function(dbconfig, emitter, feed) {
 
         if (err) { return handleError(err); }
 
-        client.query('UPDATE feeds SET lastUpdated = NOW() WHERE feed = $1', [feed], function(err, result) {
+        client.query('UPDATE feeds SET lastUpdated = NOW() WHERE feed = $1',
+            [feed], function(err, result) {
+
             if (err) { return handleError(err); }
             done();
         });
@@ -159,8 +157,6 @@ Monitor.prototype.updateTimestamp = function(dbconfig, emitter, feed) {
 };
 
 Monitor.prototype.persistEntry = function(dbconfig, emitter, entry, feed) {
-    console.log('>> ', entry.guid);
-
     pg.connect(dbconfig.connectionString, function(err, client, done) {
         function handleError(err) {
             if(client) {
@@ -176,7 +172,9 @@ Monitor.prototype.persistEntry = function(dbconfig, emitter, entry, feed) {
 
             if (result.rows.length) { return done(); }
 
-            client.query('INSERT INTO entries (id, feed) VALUES ($1, $2)', [entry.guid, feed], function(err, result) {
+            client.query('INSERT INTO entries (id, feed) VALUES ($1, $2)',
+                [entry.guid, feed], function(err, result) {
+
                 if (err) { return handleError(err); }
 
                 emitter.emit('new-entry', entry, feed);
