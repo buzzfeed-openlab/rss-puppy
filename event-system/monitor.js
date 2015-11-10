@@ -12,7 +12,7 @@ var Monitor = module.exports = function Monitor(feeds, rate, dbconfig, emitter) 
     this.setupDatabase(dbconfig, emitter);
 
     this.feedQueryInterval = setInterval(this.queryOldFeeds.bind(this, dbconfig, emitter), rate);
-}
+};
 
 Monitor.prototype.buildDBConnectionString = function(dbconfig) {
     if (dbconfig['connectionString']) {
@@ -36,7 +36,6 @@ Monitor.prototype.runDBScript = function(client, filename, cb) {
 Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
     pg.connect(dbconfig.connectionString, function(err, client, done) {
         function handleError(err) {
-            console.log(err);
             if(client) {
                 done(client);
             }
@@ -64,10 +63,58 @@ Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
 
         }.bind(this));
     }.bind(this));
-}
+};
 
 Monitor.prototype.queryOldFeeds = function(dbconfig, emitter) {
     pg.connect(dbconfig.connectionString, function(err, client, done) {
-        done();
+        function handleError(err) {
+            if(client) {
+                done(client);
+            }
+            emitter.emit(err);
+        }
+
+        if (err) { return handleError(err); }
+
+        console.log('***');
+
+        var query = client.query('SELECT * FROM feeds WHERE lastUpdated < NOW() - INTERVAL \'15 seconds\' OR lastUpdated IS NULL');
+
+        query.on('error', handleError);
+
+        query.on('row', function(row) {
+            console.log(row.feed);
+            this.queryFeed(row.feed, dbconfig, emitter);
+        }.bind(this));
+
+        query.on('end', function(result) {
+            console.log('done...')
+            done();
+        });
+
+    }.bind(this));
+};
+
+Monitor.prototype.queryFeed = function(feed, dbconfig, emitter) {
+    // will do...
+
+    this.updateTimestamp(feed, dbconfig, emitter);
+};
+
+Monitor.prototype.updateTimestamp = function(feed, dbconfig, emitter) {
+    pg.connect(dbconfig.connectionString, function(err, client, done) {
+        function handleError(err) {
+            if(client) {
+                done(client);
+            }
+            emitter.emit(err);
+        }
+
+        if (err) { return handleError(err); }
+
+        client.query('UPDATE feeds SET lastUpdated = NOW() WHERE feed = $1', [feed], function(err, result) {
+            if (err) { return handleError(err); }
+            done();
+        });
     });
-}
+};
