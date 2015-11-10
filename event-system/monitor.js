@@ -1,17 +1,23 @@
 
 var timequeue = require('timequeue'),
     pg = require('pg'),
-    fs = require('fs');
+    fs = require('fs'),
+    request = require('request'),
+    FeedParser = require('feedparser');
 
 var Monitor = module.exports = function Monitor(feeds, rate, dbconfig, emitter) {
     this.feeds = feeds;
+    this.dbconfig = dbconfig;
     this.emitter = emitter;
 
     dbconfig.connectionString = this.buildDBConnectionString(dbconfig);
 
     this.setupDatabase(dbconfig, emitter);
 
-    this.feedQueryInterval = setInterval(this.queryOldFeeds.bind(this, dbconfig, emitter), rate);
+    // hook up feed monitoring
+    this.feedQueryInterval = setInterval(this.checkForOldFeeds.bind(this, dbconfig, emitter), rate);
+    emitter.on('old-feed', this.queryFeed.bind(this, dbconfig, emitter));
+    emitter.on('feed-parsed', this.updateTimestamp.bind(this, dbconfig, emitter));
 };
 
 Monitor.prototype.buildDBConnectionString = function(dbconfig) {
@@ -65,7 +71,7 @@ Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
     }.bind(this));
 };
 
-Monitor.prototype.queryOldFeeds = function(dbconfig, emitter) {
+Monitor.prototype.checkForOldFeeds = function(dbconfig, emitter) {
     pg.connect(dbconfig.connectionString, function(err, client, done) {
         function handleError(err) {
             if(client) {
@@ -84,7 +90,8 @@ Monitor.prototype.queryOldFeeds = function(dbconfig, emitter) {
 
         query.on('row', function(row) {
             console.log(row.feed);
-            this.queryFeed(row.feed, dbconfig, emitter);
+            emitter.emit('old-feed', row.feed);
+            // this.queryFeed(row.feed, dbconfig, emitter);
         }.bind(this));
 
         query.on('end', function(result) {
@@ -95,13 +102,44 @@ Monitor.prototype.queryOldFeeds = function(dbconfig, emitter) {
     }.bind(this));
 };
 
-Monitor.prototype.queryFeed = function(feed, dbconfig, emitter) {
-    // will do...
+Monitor.prototype.queryFeed = function(dbconfig, emitter, feed) {
+    function handleError(err) {
+        emitter.emit(err);
+    }
 
-    this.updateTimestamp(feed, dbconfig, emitter);
+    var options = {
+        url: feed,
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml'
+        }
+    };
+
+    var req = request(options);
+    var feedparser = new FeedParser();
+
+    req.on('error', handleError);
+    req.on('response', function(res) {
+        if (res.statusCode != 200) {
+            return this.emit('error', new Error('bad status code: ' + res.statusCode));
+        }
+        this.pipe(feedparser);
+    });
+
+    feedparser.on('error', handleError);
+    feedparser.on('readable', function() {
+        var stream = this,
+            entry;
+
+        while(entry = stream.read()) {
+            emitter.emit('edgar-entry', entry);
+        }
+
+        emitter.emit('feed-parsed', feed);
+    });
 };
 
-Monitor.prototype.updateTimestamp = function(feed, dbconfig, emitter) {
+Monitor.prototype.updateTimestamp = function(dbconfig, emitter, feed) {
     pg.connect(dbconfig.connectionString, function(err, client, done) {
         function handleError(err) {
             if(client) {
