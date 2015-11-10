@@ -172,8 +172,8 @@ Monitor.prototype.persistEntry = function(dbconfig, emitter, entry, feed) {
 
             if (result.rows.length) { return done(); }
 
-            client.query('INSERT INTO entries (id, feed) VALUES ($1, $2)',
-                [entry.guid, feed], function(err, result) {
+            client.query('INSERT INTO entries (id, feed, title, date, link) VALUES ($1, $2, $3, $4, $5)',
+                [entry.guid, feed, entry.title, entry.date, entry.link], function(err, result) {
 
                 if (err) { return handleError(err); }
 
