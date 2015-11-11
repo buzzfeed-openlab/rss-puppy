@@ -1,7 +1,9 @@
 
+var configPath = (process.argv[2] || './config.json');
+
 var events = require('events'),
     Monitor = require('./monitor/monitor'),
-    config = require('./config.json');
+    config = require(configPath);
 
 // create global event system
 var emitter = new events.EventEmitter();
