@@ -51,7 +51,7 @@ Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
 
         if (err) { return handleError(err); }
 
-        this.runDBScript(client, './init-feed-db.sql', function(err, result) {
+        this.runDBScript(client, dbconfig.initScript, function(err, result) {
             if (err) { return handleError(err); }
 
             var feedChunks = [];

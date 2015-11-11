@@ -1,6 +1,6 @@
 
 var events = require('events'),
-    Monitor = require('./monitor'),
+    Monitor = require('./monitor/monitor'),
     config = require('./config.json');
 
 // create global event system
