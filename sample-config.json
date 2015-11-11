@@ -1,0 +1,26 @@
+{
+    "dbconfig": {
+        "user": "YOUR DB USER",
+        "password": "YOUR DB USER PW",
+        "url": "POSTGRES DB PATH",
+        "port": 5432,
+        "dbname": "DB NAME",
+        "initScript": "./monitor/init-feed-db.sql"
+    },
+
+    "rate": 10000,
+
+    "feeds": [
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001512673&type=&dateb=&owner=exclude&start=0&count=40&output=atom",
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001559720&type=&dateb=&owner=exclude&start=0&count=40&output=atom"
+    ],
+
+    "outputs": [
+        {
+            "file": "./outputs/debug-logger.js",
+            "config": {
+                "showOldFeedMessages": true
+            }
+        }
+    ]
+}

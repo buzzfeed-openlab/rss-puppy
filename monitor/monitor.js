@@ -72,7 +72,7 @@ Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
 };
 
 Monitor.prototype.checkForOldFeeds = function(dbconfig, emitter) {
-    console.log('checking for old feeds...');
+    emitter.emit('checking-old-feeds');
 
     pg.connect(dbconfig.connectionString, function(err, client, done) {
         function handleError(err) {
