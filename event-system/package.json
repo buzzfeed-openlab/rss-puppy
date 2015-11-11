@@ -12,7 +12,8 @@
     "request": "2.65.x",
     "cheerio": "0.x.x",
     "timequeue": "0.2.x",
-    "pg": "4.x.x"
+    "pg": "4.x.x",
+    "aws-sdk": "2.2.x"
   },
   "engines": {
     "node": ">=0.8.0"
