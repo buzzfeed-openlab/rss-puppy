@@ -1,4 +1,15 @@
 {
+    "feeds": [
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001512673&type=&dateb=&owner=exclude&start=0&count=40&output=atom",
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001559720&type=&dateb=&owner=exclude&start=0&count=40&output=atom"
+    ],
+
+    "throttling": {
+        "monitorFrequency": 8000,
+        "maxConcurrent": 10,
+        "concurrentInterval": 1000
+    },
+
     "dbconfig": {
         "user": "YOUR DB USER",
         "password": "YOUR DB USER PW",
@@ -7,13 +18,6 @@
         "dbname": "DB NAME",
         "initScript": "./monitor/init-feed-db.sql"
     },
-
-    "rate": 10000,
-
-    "feeds": [
-        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001512673&type=&dateb=&owner=exclude&start=0&count=40&output=atom",
-        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001559720&type=&dateb=&owner=exclude&start=0&count=40&output=atom"
-    ],
 
     "outputs": [
         {
