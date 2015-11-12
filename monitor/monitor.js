@@ -1,5 +1,5 @@
 
-var timequeue = require('timequeue'),
+var TimeQueue = require('timequeue'),
     pg = require('pg'),
     fs = require('fs'),
     request = require('request'),
@@ -10,13 +10,15 @@ var Monitor = module.exports = function Monitor(feeds, rate, dbconfig, emitter) 
     this.dbconfig = dbconfig;
     this.emitter = emitter;
 
+    this.queue = new TimeQueue(this.queryFeed.bind(this, dbconfig, emitter), { concurrency: 5, every: 1000 });
+
     dbconfig.connectionString = this.buildDBConnectionString(dbconfig);
 
     this.setupDatabase(dbconfig, emitter);
 
     // hook up feed monitoring
     this.feedQueryInterval = setInterval(this.checkForOldFeeds.bind(this, dbconfig, emitter), rate);
-    emitter.on('old-feed', this.queryFeed.bind(this, dbconfig, emitter));
+    emitter.on('old-feed', function(feed) { console.log('omg'); this.queue.push(feed); }.bind(this));
     emitter.on('feed-parsed', this.updateTimestamp.bind(this, dbconfig, emitter));
     emitter.on('entry', this.persistEntry.bind(this, dbconfig, emitter));
 };
@@ -99,7 +101,7 @@ Monitor.prototype.checkForOldFeeds = function(dbconfig, emitter) {
     }.bind(this));
 };
 
-Monitor.prototype.queryFeed = function(dbconfig, emitter, feed) {
+Monitor.prototype.queryFeed = function(dbconfig, emitter, feed, cb) {
     function handleError(err) {
         emitter.emit('error', err);
     }
@@ -133,6 +135,9 @@ Monitor.prototype.queryFeed = function(dbconfig, emitter, feed) {
         }
 
         emitter.emit('feed-parsed', feed);
+    });
+    feedparser.on('end', function() {
+        cb && cb(null, feed);
     });
 };
 
