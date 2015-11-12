@@ -5,20 +5,26 @@ var TimeQueue = require('timequeue'),
     request = require('request'),
     FeedParser = require('feedparser');
 
-var Monitor = module.exports = function Monitor(feeds, rate, dbconfig, emitter) {
+var Monitor = module.exports = function Monitor(feeds, throttling, dbconfig, emitter) {
     this.feeds = feeds;
     this.dbconfig = dbconfig;
     this.emitter = emitter;
 
-    this.queue = new TimeQueue(this.queryFeed.bind(this, dbconfig, emitter), { concurrency: 5, every: 1000 });
+    this.queryQueue = new TimeQueue(
+        this.queryFeed.bind(this, dbconfig, emitter),
+        { concurrency: throttling.maxConcurrent, every: throttling.concurrentInterval }
+    );
 
     dbconfig.connectionString = this.buildDBConnectionString(dbconfig);
 
     this.setupDatabase(dbconfig, emitter);
 
     // hook up feed monitoring
-    this.feedQueryInterval = setInterval(this.checkForOldFeeds.bind(this, dbconfig, emitter), rate);
-    emitter.on('old-feed', function(feed) { console.log('omg'); this.queue.push(feed); }.bind(this));
+    this.feedQueryInterval = setInterval(
+        this.checkForOldFeeds.bind(this, dbconfig, emitter),
+        throttling.monitorFrequency
+    );
+    emitter.on('old-feed', function(feed) { this.queryQueue.push(feed); }.bind(this));
     emitter.on('feed-parsed', this.updateTimestamp.bind(this, dbconfig, emitter));
     emitter.on('entry', this.persistEntry.bind(this, dbconfig, emitter));
 };
@@ -86,7 +92,7 @@ Monitor.prototype.checkForOldFeeds = function(dbconfig, emitter) {
 
         if (err) { return handleError(err); }
 
-        var query = client.query('SELECT * FROM feeds WHERE lastUpdated < NOW() - INTERVAL \'15 seconds\' OR lastUpdated IS NULL');
+        var query = client.query('SELECT * FROM feeds WHERE lastUpdated < NOW() - INTERVAL \'30 seconds\' OR lastUpdated IS NULL');
 
         query.on('error', handleError);
 

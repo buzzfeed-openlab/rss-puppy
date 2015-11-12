@@ -23,4 +23,4 @@ for (var i = 0; i < config['outputs'].length; ++i) {
 }
 
 // start monitor
-var monitor = new Monitor(config['feeds'], config['rate'], config['dbconfig'], emitter);
+var monitor = new Monitor(config['feeds'], config['throttling'], config['dbconfig'], emitter);
