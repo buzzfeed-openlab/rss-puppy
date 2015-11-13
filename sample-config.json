@@ -15,8 +15,8 @@
     },
 
     "dbconfig": {
-        "user": "YOUR DB USER",
-        "password": "YOUR DB USER PW",
+        "user": "DB USER",
+        "password": "DB USER PW",
         "url": "POSTGRES DB PATH",
         "port": 5432,
         "dbname": "DB NAME",
