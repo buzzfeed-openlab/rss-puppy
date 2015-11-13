@@ -1,7 +1,11 @@
 {
     "feeds": [
-        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001512673&type=&dateb=&owner=exclude&start=0&count=40&output=atom",
-        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001559720&type=&dateb=&owner=exclude&start=0&count=40&output=atom"
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001440512&type=&dateb=&owner=exclude&start=0&count=40&output=atom",
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001326801&type=&dateb=&owner=exclude&start=0&count=40&output=atom",
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001652044&type=&dateb=&owner=exclude&start=0&count=40&output=atom",
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000320193&type=&dateb=&owner=exclude&start=0&count=40&output=atom",
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001018724&type=&dateb=&owner=exclude&start=0&count=40&output=atom",
+        "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000936468&type=&dateb=&owner=exclude&start=0&count=40&output=atom"
     ],
 
     "throttling": {
