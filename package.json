@@ -1,16 +1,12 @@
 {
-  "name": "puppy-event-system",
+  "name": "puppy",
   "version": "0.0.1",
   "author": {
     "name": "Westley Argentum Hennigh"
   },
   "dependencies": {
-    "twit": "2.1.x",
-    "node-fetch": "1.3.x",
-    "markovchain": "0.0.6",
     "feedparser": "1.1.x",
     "request": "2.65.x",
-    "cheerio": "0.x.x",
     "timequeue": "0.2.x",
     "pg": "4.x.x",
     "aws-sdk": "2.2.x"
@@ -18,12 +14,12 @@
   "engines": {
     "node": ">=0.8.0"
   },
-  "main": "./event-system.js",
+  "main": "./run.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/WestleyArgentum/puppy"
+    "url": "https://github.com/buzzfeed-openlab/puppy"
   },
   "bugs": {
-    "url": "https://github.com/WestleyArgentum/puppy/issues"
+    "url": "https://github.com/buzzfeed-openlab/puppy/issues"
   }
 }
