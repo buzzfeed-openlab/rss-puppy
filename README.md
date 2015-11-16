@@ -18,7 +18,7 @@ An easy way to get a reliable, automatically backed up database is to use AWS. L
 
 Once you have your DB, you can tell the monitor about it using the `config.json` file:
 
-```json
+```js
 {
     "dbconfig": {
         "user": "DB USER",
@@ -35,7 +35,7 @@ Once you have your DB, you can tell the monitor about it using the `config.json`
 ### Configure your feeds
 In the config file there will be a section called `"feeds"` and a section called `"throttling"`.
 
-```json
+```js
 {
     "feeds": [
         "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001440512&type=&dateb=&owner=exclude&start=0&count=40&output=atom",
@@ -68,7 +68,7 @@ There are several different kinds of events:
 - `"old-feed"`: Emitted whenever the monitor finds a feed that hasn't been queried in awhile and needs to be checked. Handlers will be invoked with the `feed` url as a string.
 - `"entry"`: Emitted whenever an entry is parsed from a feed. Note that feeds will be queried and parsed over and over again, so this will be emitted for the same entry many times. Handlers will be called with the `entry` as a json object and the `feed` url as a string.
 
-```json
+```js
 {
 	"outputs": [
         {
