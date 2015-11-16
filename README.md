@@ -83,3 +83,10 @@ There are several different kinds of events:
 }
 
 ```
+
+
+### Run the monitor!
+
+```bash
+node ./run.js [/path/to/config.json]
+```
