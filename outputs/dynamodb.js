@@ -2,7 +2,11 @@
 var AWS = require('aws-sdk');
 
 var DynamodbOutput = module.exports = function(emitter, config) {
-    this.dynamodb = new AWS.DynamoDB.DocumentClient({ 'region': 'us-east-1' });
+    if (!config.region) {
+        config.region = 'us-east-1';
+    }
+
+    this.dynamodb = new AWS.DynamoDB.DocumentClient({ 'region': config.region });
     this.emitter = emitter;
     this.config = config;
 
@@ -15,7 +19,6 @@ DynamodbOutput.prototype.persistEntry = function(entry, feed) {
         Item: {
             'id': entry.guid,
             'feed': feed,
-            'filing-type': entry.title,
             'title': entry.title,
             'date': entry.date.toString(),
             'link': entry.link
