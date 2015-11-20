@@ -2,7 +2,7 @@
   "name": "puppy",
   "version": "0.0.1",
   "author": {
-    "name": "Westley Argentum Hennigh"
+    "name": "Westley Argentum Hennigh-Palermo"
   },
   "dependencies": {
     "feedparser": "1.1.x",
