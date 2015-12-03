@@ -1,5 +1,5 @@
 {
-  "name": "puppy",
+  "name": "rss-puppy",
   "version": "0.0.1",
   "author": {
     "name": "Westley Argentum Hennigh-Palermo"
@@ -17,9 +17,9 @@
   "main": "./run.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/buzzfeed-openlab/puppy"
+    "url": "https://github.com/buzzfeed-openlab/rss-puppy"
   },
   "bugs": {
-    "url": "https://github.com/buzzfeed-openlab/puppy/issues"
+    "url": "https://github.com/buzzfeed-openlab/rss-puppy/issues"
   }
 }
