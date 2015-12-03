@@ -1,4 +1,4 @@
-Copyright (c) 2015 Buzzfeed Open Lab and [contributors](https://github.com/buzzfeed-openlab/puppy/graphs/contributors)
+Copyright (c) 2015 Buzzfeed Open Lab and [contributors](https://github.com/buzzfeed-openlab/rss-puppy/graphs/contributors)
 
 
 ```
