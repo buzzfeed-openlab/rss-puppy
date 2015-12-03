@@ -1,4 +1,4 @@
-# Puppy
+# RSS Puppy
 
 ##### A watchdog tool for monitoring RSS feeds
 
@@ -10,8 +10,8 @@ This monitor can be run on any cloud service provider, and requires only Nodejs 
 
 ### Get the code
 
-- `git clone https://github.com/buzzfeed-openlab/puppy.git`
-- `cd puppy; npm install`
+- `git clone https://github.com/buzzfeed-openlab/rss-puppy.git`
+- `cd rss-puppy; npm install`
 - `cp ./sample-config.json ./config.json`
 
 ### Set up a database
