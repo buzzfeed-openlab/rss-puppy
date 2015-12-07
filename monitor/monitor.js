@@ -15,6 +15,10 @@ var Monitor = module.exports = function Monitor(feeds, throttling, dbconfig, emi
         { concurrency: throttling.maxConcurrent, every: throttling.concurrentInterval }
     );
 
+    if (dbconfig.maxConnections) {
+        pg.defaults.poolSize = dbconfig.maxConnections;
+    }
+
     dbconfig.connectionString = this.buildDBConnectionString(dbconfig);
 
     this.setupDatabase(dbconfig, emitter);
