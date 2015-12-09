@@ -30,5 +30,7 @@
                 "showOldFeedMessages": true
             }
         }
-    ]
+    ],
+
+    "exitOnError": true
 }
