@@ -10,7 +10,9 @@ var emitter = new events.EventEmitter();
 
 // always log errors, just in case
 emitter.on('error', function(err) {
-    console.log('error:\n', err);
+    console.log('Error:');
+    console.log(err);
+    console.log('-----');
 
     if (config.exitOnError) {
        process.exit(1);
