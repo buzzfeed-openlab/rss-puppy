@@ -6,11 +6,13 @@ var DebugLogger = module.exports = function(emitter, config) {
 
     if (config.showOldFeedMessages) {
         emitter.on('checking-old-feeds', function() {
-            console.log('checking for out of date feeds...');
+            var timeStamp = (new Date()).toString();
+            console.log(timeStamp, ' checking for out of date feeds...');
         });
 
         emitter.on('old-feed', function(feed) {
-            console.log('old feed: ', feed);
+            var timeStamp = (new Date()).toString();
+            console.log(timeStamp, ' old feed: ', feed);
         });
     }
 
@@ -18,7 +20,8 @@ var DebugLogger = module.exports = function(emitter, config) {
 };
 
 DebugLogger.prototype.onNewEntry = function(entry, feed) {
-    console.log('> new entry on feed: ' + feed + '\n  with id: ' + entry.guid);
+    var timeStamp = (new Date()).toString();
+    console.log(timeStamp, ' > new entry on feed: ' + feed + '\n   with id: ' + entry.guid);
 };
 
 

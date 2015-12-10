@@ -10,7 +10,8 @@ var emitter = new events.EventEmitter();
 
 // always log errors, just in case
 emitter.on('error', function(err) {
-    console.log('Error:');
+    var timeStamp = (new Date()).toString();
+    console.log(timeStamp, ' Error:');
     console.log(err);
     console.log('-----');
 
