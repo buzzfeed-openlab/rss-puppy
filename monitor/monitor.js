@@ -25,7 +25,7 @@ var Monitor = module.exports = function Monitor(feeds, throttling, dbconfig, emi
 
     // hook up feed monitoring
     this.feedQueryInterval = setInterval(
-        this.checkForOldFeeds.bind(this, dbconfig, emitter),
+        this.checkForOldFeeds.bind(this, throttling.oldFeedThreshold, dbconfig, emitter),
         throttling.monitorFrequency
     );
     emitter.on('old-feed', function(feed) { this.queryQueue.push(feed); }.bind(this));
@@ -83,7 +83,7 @@ Monitor.prototype.setupDatabase = function(dbconfig, emitter) {
     }.bind(this));
 };
 
-Monitor.prototype.checkForOldFeeds = function(dbconfig, emitter) {
+Monitor.prototype.checkForOldFeeds = function(ageThreshold, dbconfig, emitter) {
     emitter.emit('checking-old-feeds');
 
     pg.connect(dbconfig.connectionString, function(err, client, done) {
@@ -96,7 +96,7 @@ Monitor.prototype.checkForOldFeeds = function(dbconfig, emitter) {
 
         if (err) { return handleError(err); }
 
-        var query = client.query('SELECT * FROM feeds WHERE lastUpdated < NOW() - INTERVAL \'30 seconds\' OR lastUpdated IS NULL');
+        var query = client.query('SELECT * FROM feeds WHERE lastUpdated < NOW() - INTERVAL \'' + ageThreshold + ' seconds\' OR lastUpdated IS NULL');
 
         query.on('error', handleError);
 

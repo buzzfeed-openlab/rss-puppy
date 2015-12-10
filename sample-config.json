@@ -10,6 +10,7 @@
 
     "throttling": {
         "monitorFrequency": 8000,
+        "oldFeedThreshold": 30,
         "maxConcurrent": 10,
         "concurrentInterval": 1000
     },
