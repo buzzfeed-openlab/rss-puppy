@@ -6,7 +6,7 @@ This tool is designed to monitor RSS feeds in bulk, and to generate machine frie
 
 This monitor can be run on any cloud service provider, and requires only Nodejs and a PostgreSQL database. Also, it is trivial to add output handlers which can pipe feed entry data to any service you use.
 
-[Read more about the motivation and design.](http://www.buzzfeed.com/westleyargentum/your-very-own-rss-watchdog)
+Read more about the [motivation](http://www.buzzfeed.com/westleyargentum/automated-journalism-that-works-with-journalists) and [design](http://www.buzzfeed.com/westleyargentum/your-very-own-rss-watchdog).
 
 ## How to run
 
