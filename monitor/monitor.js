@@ -44,7 +44,7 @@ Monitor.prototype.buildDBConnectionString = function(dbconfig) {
         port = dbconfig['port'],
         dbname = dbconfig['dbname'];
 
-    return 'postgres://' + user + ':' + pw + '@' + url + ':' + port + '/' + dbname;
+    return 'postgres://' + encodeURIComponent(user) + ':' + encodeURIComponent(pw) + '@' + url + ':' + port + '/' + dbname;
 };
 
 Monitor.prototype.runDBScript = function(client, filename, cb) {
