@@ -38,13 +38,13 @@ Monitor.prototype.buildDBConnectionString = function(dbconfig) {
         return dbconfig['connectionString'];
     }
 
-    var user = dbconfig['user'],
-        pw = dbconfig['password'],
-        url = dbconfig['url'],
-        port = dbconfig['port'],
-        dbname = dbconfig['dbname'];
+    var user = encodeURIComponent(dbconfig['user']),
+        pw = encodeURIComponent(dbconfig['password']),
+        url = encodeURIComponent(dbconfig['url']),
+        port = encodeURIComponent(dbconfig['port']),
+        dbname = encodeURIComponent(dbconfig['dbname']);
 
-    return 'postgres://' + encodeURIComponent(user) + ':' + encodeURIComponent(pw) + '@' + url + ':' + port + '/' + dbname;
+    return 'postgres://' + user + ':' + pw + '@' + url + ':' + port + '/' + dbname;
 };
 
 Monitor.prototype.runDBScript = function(client, filename, cb) {
