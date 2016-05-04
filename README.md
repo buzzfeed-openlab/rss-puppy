@@ -2,9 +2,11 @@
 
 ##### A watchdog tool for monitoring RSS feeds
 
-This tool is designed to monitor RSS feeds in bulk, and to generate machine friendly notifications when new entries appear. While there exists no shortage of RSS readers and web-based notification services, nothing we found combines easy managment of hundreds of RSS feeds with the flexibility to direct output to a variety of data stores or over disperate protocols.
+This tool is designed to monitor RSS feeds in bulk, and to generate machine friendly notifications when new entries appear. While there exists no shortage of RSS readers and web-based notification services, nothing we found combines easy managment of hundreds of RSS feeds with the flexibility to direct output to a variety of data stores or over disparate protocols.
 
 This monitor can be run on any cloud service provider, and requires only Nodejs and a PostgreSQL database. Also, it is trivial to add output handlers which can pipe feed entry data to any service you use.
+
+Read more about the [motivation](http://www.buzzfeed.com/westleyargentum/automated-journalism-that-works-with-journalists) and [design](http://www.buzzfeed.com/westleyargentum/your-very-own-rss-watchdog).
 
 ## How to run
 
