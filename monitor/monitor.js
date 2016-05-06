@@ -4,6 +4,8 @@ var TimeQueue = require('timequeue'),
     fs = require('fs'),
     request = require('request'),
     FeedParser = require('feedparser');
+    
+pg.defaults.ssl = true;
 
 var Monitor = module.exports = function Monitor(feeds, throttling, dbconfig, emitter) {
     this.feeds = feeds;
