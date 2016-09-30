@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "feedparser": "1.1.x",
-    "request": "2.65.x",
+    "request": "2.74.0",
     "timequeue": "0.2.x",
     "pg": "4.x.x",
     "aws-sdk": "2.2.x"
