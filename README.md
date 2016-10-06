@@ -1,5 +1,7 @@
 # RSS Puppy
 
+[![Known Vulnerabilities](https://snyk.io/test/github/buzzfeed-openlab/rss-puppy/c67c51302fa5181e0cdd3a6bdae40a580e790d17/badge.svg)](https://snyk.io/test/github/buzzfeed-openlab/rss-puppy/c67c51302fa5181e0cdd3a6bdae40a580e790d17)
+
 ##### A watchdog tool for monitoring RSS feeds
 
 This tool is designed to monitor RSS feeds in bulk, and to generate machine friendly notifications when new entries appear. While there exists no shortage of RSS readers and web-based notification services, nothing we found combines easy managment of hundreds of RSS feeds with the flexibility to direct output to a variety of data stores or over disparate protocols.
