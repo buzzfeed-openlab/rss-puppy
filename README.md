@@ -1,5 +1,7 @@
 # RSS Puppy
 
+RSS Puppy is an BuzzFeed Open Lab project from our first cohort. You're welcome to fork it and build on it and learn from it, but unfortunately we're not able to provide support. 😢
+
 ##### A watchdog tool for monitoring RSS feeds
 
 This tool is designed to monitor RSS feeds in bulk, and to generate machine friendly notifications when new entries appear. While there exists no shortage of RSS readers and web-based notification services, nothing we found combines easy managment of hundreds of RSS feeds with the flexibility to direct output to a variety of data stores or over disparate protocols.
